@@ -156,10 +156,11 @@ app.http('saveDuty', {
     }
 
     } catch (outerErr) {
-      // 想定外の例外をキャッチしてレスポンスボディに含める（デバッグ用）
+      // 想定外の例外を握りつぶさず 500 で返す（空レスポンスを防ぐ）
+      context.error('saveDuty: 予期しないエラー:', outerErr)
       return {
         status: 500,
-        jsonBody: { error: 'Unhandled exception', message: String(outerErr) },
+        jsonBody: { error: 'Internal server error' },
       }
     }
   },

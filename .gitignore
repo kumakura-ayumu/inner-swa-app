@@ -19,6 +19,7 @@ api/local.settings.json
 # Editor
 .vscode/
 .idea/
+.claude/
 *.swp
 *.swo
 

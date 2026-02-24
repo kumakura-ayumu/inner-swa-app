@@ -74,6 +74,17 @@ app.http('saveDuty', {
       }
     }
 
+    // DEBUG: テナント比較情報を返す（確認後に削除）
+    return {
+      status: 200,
+      jsonBody: {
+        debug: true,
+        tenantId,
+        allowedTenantId,
+        claimTypes: (principal.claims || []).map((c) => c.typ),
+      },
+    }
+
     const skipTenantCheck = process.env.SKIP_TENANT_CHECK === 'true'
     if (!skipTenantCheck) {
       if (!tenantId || tenantId !== allowedTenantId) {

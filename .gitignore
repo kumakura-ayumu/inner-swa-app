@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+api/node_modules/
+
+# Build output
+dist/
+
+# Local environment files (NEVER commit these)
+api/local.settings.json
+!api/local.settings.json.example
+.env
+.env.local
+.env.*.local
+
+# SWA CLI
+.swa/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo

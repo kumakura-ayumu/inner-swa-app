@@ -1,0 +1,13 @@
+{
+  "name": "kitchen-duty-api",
+  "version": "1.0.0",
+  "description": "Azure Functions backend for kitchen duty schedule app",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "start": "func start",
+    "build": "echo No build step for plain JS"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.5.1"
+  }
+}

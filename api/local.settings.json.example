@@ -1,0 +1,10 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "POWER_AUTOMATE_URL": "https://prod-XX.region.logic.azure.com:443/workflows/YOUR_FLOW_ID/triggers/manual/paths/invoke?...",
+    "ALLOWED_TENANT_ID": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "SKIP_TENANT_CHECK": "true"
+  }
+}

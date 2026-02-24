@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"c:/00/Dropbox/10_work/20_content/13_Develop/VSCode/260221_swa-vite-api/swa-vite-api\" log --oneline -10)"
+    ]
+  }
+}

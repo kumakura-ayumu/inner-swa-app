@@ -3,7 +3,7 @@
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "node",
-    "POWER_AUTOMATE_URL": "https://prod-XX.region.logic.azure.com:443/workflows/YOUR_FLOW_ID/triggers/manual/paths/invoke?...",
+    "POWER_AUTOMATE_URL": "https://your-power-automate-url-here",
     "ALLOWED_EMAIL_DOMAIN": "certify.jp"
   }
 }

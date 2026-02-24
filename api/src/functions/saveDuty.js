@@ -70,6 +70,20 @@ app.http('saveDuty', {
       }
     }
 
+    // ── セキュリティチェック 4: 許可ドメインの確認 ──
+    // ゲストアカウント・個人MSA等の社外アカウントを排除する。
+    const allowedDomain = process.env.ALLOWED_EMAIL_DOMAIN
+    if (allowedDomain) {
+      const userEmail = (principal.userDetails || '').toLowerCase()
+      if (!userEmail.endsWith(`@${allowedDomain.toLowerCase()}`)) {
+        context.warn(`saveDuty: 許可されていないドメイン: ${userEmail}`)
+        return {
+          status: 403,
+          jsonBody: { error: 'Forbidden: Account not allowed' },
+        }
+      }
+    }
+
     // ── リクエストボディの解析 ──
     /** @type {{ duties?: Array<{ id: string, day: string, member: string }> }} */
     let body

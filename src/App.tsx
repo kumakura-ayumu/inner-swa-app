@@ -110,6 +110,7 @@ export default function App() {
   const [username, setUsername] = useState<string>('読み込み中...')
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null)
 
   // Fetch logged-in user from SWA built-in auth endpoint.
   // /.auth/me は SWA CLI (port 4280) または本番環境でのみ有効。
@@ -119,17 +120,29 @@ export default function App() {
       .then(async (res) => {
         if (!res.ok) {
           setUsername('（ローカル開発中）')
+          setIsAuthorized(true)
           return
         }
         const data: { clientPrincipal: SwaClientPrincipal | null } =
           await res.json()
         if (data.clientPrincipal) {
           setUsername(data.clientPrincipal.userDetails)
+          const allowedDomain = import.meta.env.VITE_ALLOWED_EMAIL_DOMAIN as string | undefined
+          if (allowedDomain) {
+            const email = data.clientPrincipal.userDetails.toLowerCase()
+            setIsAuthorized(email.endsWith(`@${allowedDomain.toLowerCase()}`))
+          } else {
+            setIsAuthorized(true)
+          }
         } else {
           setUsername('未認証')
+          setIsAuthorized(false)
         }
       })
-      .catch(() => setUsername('（ローカル開発中）'))
+      .catch(() => {
+        setUsername('（ローカル開発中）')
+        setIsAuthorized(true)
+      })
   }, [])
 
   const sensors = useSensors(
@@ -178,6 +191,32 @@ export default function App() {
       setErrorMessage('ネットワークエラーが発生しました')
       setSaveStatus('error')
     }
+  }
+
+  if (isAuthorized === null) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <p className="text-gray-400">読み込み中...</p>
+      </div>
+    )
+  }
+
+  if (isAuthorized === false) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">
+            アクセス権がありません
+          </h1>
+          <p className="text-gray-500 text-sm mb-4">
+            このアプリは社内アカウントのみ利用できます。
+          </p>
+          <a href="/.auth/logout" className="text-indigo-600 underline text-sm">
+            ログアウト
+          </a>
+        </div>
+      </div>
+    )
   }
 
   return (

@@ -8,6 +8,6 @@
     "build": "echo No build step for plain JS"
   },
   "dependencies": {
-    "@azure/functions": "^4.5.1"
+    "@azure/functions": "4.5.1"
   }
 }

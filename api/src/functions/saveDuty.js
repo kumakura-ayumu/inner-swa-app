@@ -40,7 +40,7 @@ app.http('saveDuty', {
     // ── セキュリティチェック 1: principal ヘッダーの存在確認 ──
     const principalHeader = request.headers.get('x-ms-client-principal')
     if (!principalHeader) {
-      context.log.warn('saveDuty: x-ms-client-principal ヘッダーが見つかりません')
+      context.warn('saveDuty: x-ms-client-principal ヘッダーが見つかりません')
       return {
         status: 401,
         jsonBody: { error: 'Unauthorized: No client principal found' },
@@ -50,7 +50,7 @@ app.http('saveDuty', {
     // ── セキュリティチェック 2: base64デコード & JSON解析 ──
     const principal = decodeClientPrincipal(principalHeader)
     if (!principal) {
-      context.log.warn('saveDuty: principal のデコードに失敗しました')
+      context.warn('saveDuty: principal のデコードに失敗しました')
       return {
         status: 401,
         jsonBody: { error: 'Unauthorized: Failed to decode client principal' },
@@ -67,7 +67,7 @@ app.http('saveDuty', {
 
     const allowedTenantId = process.env.ALLOWED_TENANT_ID
     if (!allowedTenantId) {
-      context.log.error('saveDuty: ALLOWED_TENANT_ID 環境変数が未設定です')
+      context.error('saveDuty: ALLOWED_TENANT_ID 環境変数が未設定です')
       return {
         status: 500,
         jsonBody: { error: 'Server configuration error' },
@@ -77,7 +77,7 @@ app.http('saveDuty', {
     const skipTenantCheck = process.env.SKIP_TENANT_CHECK === 'true'
     if (!skipTenantCheck) {
       if (!tenantId || tenantId !== allowedTenantId) {
-        context.log.warn(
+        context.warn(
           `saveDuty: テナント不一致 expected=${allowedTenantId}, got=${tenantId}`,
         )
         return {
@@ -86,7 +86,7 @@ app.http('saveDuty', {
         }
       }
     } else {
-      context.log.warn('saveDuty: SKIP_TENANT_CHECK=true のためテナント検証をスキップします（ローカル開発用）')
+      context.warn('saveDuty: SKIP_TENANT_CHECK=true のためテナント検証をスキップします（ローカル開発用）')
     }
 
     // ── リクエストボディの解析 ──
@@ -127,7 +127,7 @@ app.http('saveDuty', {
     // ── Power Automate へ転送 ──
     const powerAutomateUrl = process.env.POWER_AUTOMATE_URL
     if (!powerAutomateUrl) {
-      context.log.error('saveDuty: POWER_AUTOMATE_URL 環境変数が未設定です')
+      context.error('saveDuty: POWER_AUTOMATE_URL 環境変数が未設定です')
       return {
         status: 500,
         jsonBody: { error: 'Server configuration error: POWER_AUTOMATE_URL not set' },
@@ -152,7 +152,7 @@ app.http('saveDuty', {
 
       if (!paResponse.ok) {
         const paBody = await paResponse.text()
-        context.log.error(
+        context.error(
           `saveDuty: Power Automate が ${paResponse.status} を返しました: ${paBody}`,
         )
         return {
@@ -167,7 +167,7 @@ app.http('saveDuty', {
         jsonBody: { success: true, savedAt: payload.savedAt },
       }
     } catch (err) {
-      context.log.error('saveDuty: Power Automate 呼び出しでネットワークエラー:', err)
+      context.error('saveDuty: Power Automate 呼び出しでネットワークエラー:', err)
       return {
         status: 502,
         jsonBody: { error: 'Network error calling Power Automate' },

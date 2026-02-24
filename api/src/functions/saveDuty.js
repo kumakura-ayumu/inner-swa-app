@@ -35,6 +35,7 @@ app.http('saveDuty', {
   authLevel: 'anonymous',
   handler: async (request, context) => {
     context.log('saveDuty: 呼び出し開始')
+    try {
 
     // ── セキュリティチェック 1: principal ヘッダーの存在確認 ──
     const principalHeader = request.headers.get('x-ms-client-principal')
@@ -170,6 +171,14 @@ app.http('saveDuty', {
       return {
         status: 502,
         jsonBody: { error: 'Network error calling Power Automate' },
+      }
+    }
+
+    } catch (outerErr) {
+      // 想定外の例外をキャッチしてレスポンスボディに含める（デバッグ用）
+      return {
+        status: 500,
+        jsonBody: { error: 'Unhandled exception', message: String(outerErr) },
       }
     }
   },

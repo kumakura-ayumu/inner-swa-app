@@ -181,7 +181,6 @@ export default function App() {
       })
       if (res.ok) {
         setSaveStatus('success')
-        setTimeout(() => setSaveStatus('idle'), 3000)
       } else {
         const text = await res.text()
         setErrorMessage(`サーバーエラー: ${res.status} ${text}`)

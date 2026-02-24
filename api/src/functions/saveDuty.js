@@ -57,47 +57,17 @@ app.http('saveDuty', {
       }
     }
 
-    // ── セキュリティチェック 3: テナントID の検証 ──
-    const TENANT_ID_CLAIM_TYPE =
-      'http://schemas.microsoft.com/identity/claims/tenantid'
-    const tenantClaim = (principal.claims || []).find(
-      (c) => c.typ === TENANT_ID_CLAIM_TYPE,
-    )
-    const tenantId = tenantClaim ? tenantClaim.val : null
-
-    const allowedTenantId = process.env.ALLOWED_TENANT_ID
-    if (!allowedTenantId) {
-      context.error('saveDuty: ALLOWED_TENANT_ID 環境変数が未設定です')
+    // ── セキュリティチェック 3: AAD 認証であることを確認 ──
+    // SWA Easy Auth は claims を渡さないため identityProvider で確認する。
+    // SWA 自体が AAD 認証を強制しているため多層防御として機能する。
+    if (principal.identityProvider !== 'aad') {
+      context.warn(
+        `saveDuty: 許可されていない identityProvider: ${principal.identityProvider}`,
+      )
       return {
-        status: 500,
-        jsonBody: { error: 'Server configuration error' },
+        status: 403,
+        jsonBody: { error: 'Forbidden: AAD authentication required' },
       }
-    }
-
-    // DEBUG: テナント比較情報を返す（確認後に削除）
-    return {
-      status: 200,
-      jsonBody: {
-        debug: true,
-        tenantId,
-        allowedTenantId,
-        claimTypes: (principal.claims || []).map((c) => c.typ),
-      },
-    }
-
-    const skipTenantCheck = process.env.SKIP_TENANT_CHECK === 'true'
-    if (!skipTenantCheck) {
-      if (!tenantId || tenantId !== allowedTenantId) {
-        context.warn(
-          `saveDuty: テナント不一致 expected=${allowedTenantId}, got=${tenantId}`,
-        )
-        return {
-          status: 403,
-          jsonBody: { error: 'Forbidden: Tenant not allowed' },
-        }
-      }
-    } else {
-      context.warn('saveDuty: SKIP_TENANT_CHECK=true のためテナント検証をスキップします（ローカル開発用）')
     }
 
     // ── リクエストボディの解析 ──
